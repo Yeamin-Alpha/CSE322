@@ -1,0 +1,439 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>{{ public_profile.user.username }}'s Public Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+    
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+    
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+    
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+    
+        .navbar a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding: 10px 20px;
+            transition: color 0.3s ease;
+        }
+    
+        .navbar a:hover {
+            color: #333;
+        }
+    
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    
+        .profile-header img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #f39c12;
+        }
+    
+        .profile-header h2 {
+            font-size: 1.6rem;
+            margin-top: 10px;
+            color: #222;
+        }
+    
+        .profile-header p {
+            color: #777;
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+    
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1rem;
+            margin-top: 15px;
+            color: #555;
+        }
+    
+        .profile-stats div {
+            text-align: center;
+        }
+    
+        .profile-stats strong {
+            display: block;
+            font-size: 1.3rem;
+            color: #333;
+        }
+    
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+    
+        .action-btn {
+            background-color: #f39c12;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .action-btn:hover {
+            background-color: #e67e22;
+        }
+    
+        .skills-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+    
+        .skills-section h3 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+    
+        .skill-card {
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+    
+        .skill-card:hover {
+            transform: translateY(-5px);
+        }
+    
+        .skill-card p {
+            margin-top: 5px;
+            font-size: 1rem;
+            color: #444;
+        }
+    
+        .skill-card .price {
+            color: #333;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    
+        .gallery-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+    
+        .gallery-section h3 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+        }
+    
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+    
+        .gallery-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .gallery-section button {
+            background-color: #f39c12;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .gallery-section button:hover {
+            background-color: #e67e22;
+        }
+    
+        .gallery-card img:hover {
+            transform: scale(1.05);
+        }
+    
+        .rating-section {
+            margin-top: 30px;
+            
+
+            text-align: center;
+        }
+    
+        .rating-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    
+        .rating-section form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+    
+        .rating-section select {
+            width: 150px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            color: #555;
+        }
+    
+        .rating-section button {
+            background-color: #f39c12;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .rating-section button:hover {
+            background-color: #e67e22;
+        }
+        .btn-booking-details {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #c1a5f5; 
+            
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        .btn-booking-details:hover {
+            background-color: #da6b57c4; 
+            
+            transform: translateY(-3px); 
+        }
+        
+    </style>
+    
+</head>
+<!-- public_profile.html -->
+<body>
+    <div class="container">
+        
+        <div class="navbar">
+            <a href="{% url 'index' %}">Home</a>
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'chat_interface' username=user.username %}">Messenger</a>
+        </div>
+        
+        <div class="profile-header">
+            <img src="{{ public_profile.user.profile.image.url }}" alt="Profile Picture">
+            <h2>{{ public_profile.user.username }}</h2>
+            <p>{{ public_profile.user.profile.bio }}</p>
+            <div class="profile-stats">
+                <div>
+                    <strong>{{ rating }}</strong>
+                    <span>Rating</span>
+                </div>
+                <div>
+                    <strong>{{ followers_count }}</strong>
+                    <span>Followers</span>
+                </div>
+                <div>
+                    <strong>{{ following_count }}</strong>  
+                    <span>Following</span>
+                </div>
+            </div>
+        </div>
+                
+        
+        <div class="action-buttons">
+            {% if request.user.is_authenticated and not is_owner %}
+                <form method="POST" action="{% url 'toggle_follow' public_profile.user.username %}">
+                    {% csrf_token %}
+                    {% if is_following %}
+                        <button type="submit" class="action-btn">Unfollow</button>
+                    {% else %}
+                        <button type="submit" class="action-btn">Follow</button>
+                    {% endif %}
+                </form>
+                
+                <a href="{% url 'chat_interface' public_profile.user.username %}" class="btn btn-primary"><button class="action-btn" he>Message</button> </a>
+            {% endif %}
+            
+        </div>
+        
+
+        {%if user.profile.status == 'Professional' %}
+        <div class="skills-section">
+            <h3>Skills</h3>
+            <div class="skills-grid">
+                {% for skill in skills %}
+                    <div class="skill-card">
+                        <p><strong>{{ skill.name }}</strong></p>
+                        <p class="price">৳{{ skill.price }}</p>
+                    </div>
+                {% empty %}
+                    <p>No skills to display.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        
+        <div class="gallery-section">
+            <h3>Posts</h3>
+            <div class="gallery-grid">
+                {% for image in images %}
+                    <div class="gallery-card">
+                        <img src="{{ image.image.url }}" alt="Profile Image">
+
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if is_owner %}
+                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_image' %}">
+            {% csrf_token %}
+            <label for="image">Upload Image:</label>
+            <input type="file" name="image" id="image" accept="image/*" required>
+            <button type="submit">Post Image</button>
+            </form>
+             {% endif %}
+
+            {% if is_owner and user.profile.status == 'Professional' %}
+            
+            <a href="{% url 'booking_details' %}" class="btn-booking-details">View Booking Details</a>
+            
+            {% endif %}
+         
+            {% if not is_owner %}
+                     <a href="{% url 'book_skill' username=public_profile.user.username %}">
+                     <button type="button">Book</button>
+                      </a>
+            {% endif %}
+
+        </div>
+        <div class="rating-section">
+            {% if not is_owner %}
+                {% if has_rated %}
+                   
+                    <form method="POST" action="{% url 'delete_rating' public_profile.user.username %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete Rating</button>
+                    </form>
+                {% else %}
+                    
+                    <form method="POST" action="{% url 'submit_rating' public_profile.user.username %}">
+                        {% csrf_token %}
+                        <label for="rating">Rate this user (1-5):</label>
+                        <select name="rating_value" id="rating" required>
+                            <option value="">Choose</option>
+                            {% for i in "12345" %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        
+    </div>
+    
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingForm = document.getElementById('ratingForm');
+            
+            if (ratingForm) {
+                ratingForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(ratingForm);
+                    
+                    fetch(ratingForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Rating submitted successfully!');
+                            document.querySelector('.rating-section p').textContent = `Average Rating: ${data.average_rating.toFixed(1)}`;
+                        } else if (data.error) {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            }
+        });
+    </script>
+    
+</body>
+</html>

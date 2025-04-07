@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .nav{ 
+            color: #fff;
+
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .container h1 {
+            background:rgb(244, 97, 97);
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .results-section {
+            padding: 20px;
+        }
+
+        .results-section h2 {
+            margin-bottom: 15px;
+            color:rgb(244, 97, 97);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        a {
+            text-decoration: none;
+            color:rgb(244, 97, 97);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #c72f29;
+        }
+
+        p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<header>Search Results
+    <nav>
+        <a href="{% url 'index' %}">Home</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h1>Search Results for "{{ query }}"</h1>
+
+    <div class="results-section">
+        {% if users %}
+            <h2>Users</h2>
+            <ul>
+                {% for user in users %}
+                    <li>
+                        <a href="/public_profile/{{ user.username }}/">{{ user.username }}</a>
+                        <span>{{ user.profile.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if skills %}
+            <h2>Skills</h2>
+            <ul>
+                {% for skill in skills %}
+                    <li>
+                        <a href="/public_profile/{{ skill.user.username }}/">
+                            {{ skill.name }} - {{ skill.category }}
+                        </a>
+                        <p>{{ skill.user.username }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+        {% endif %}
+
+        {% if not users and not skills %}
+            <div class="no-results">
+                <p>No results found for "{{ query }}".</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
