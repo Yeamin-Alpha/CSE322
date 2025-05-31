@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Community</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background-color: #000000;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        .header img {
+            height: 100px;
+            width: 100px;
+            transition: transform 0.3s ease;
+        }
+        
+        .header img:hover {
+            transform: scale(1.05);
+        }
+        
+        .notifications-section {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .notifications-section h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .notifications-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .notification-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .notification-card p {
+            margin: 0;
+            font-size: 1rem;
+            color: #444;
+        }
+        
+        .notification-card small {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .no-notifications {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #555;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .notifications-section {
+                padding: 0 15px;
+            }
+        
+            .notifications-section h2 {
+                font-size: 1.5rem;
+            }
+        
+            .notification-card {
+                padding: 1rem;
+            }
+        
+            .notification-card p {
+                font-size: 0.95rem;
+            }
+        
+            .notification-card small {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header img {
+                height: 80px;
+                width: 80px;
+            }
+        
+            .notifications-section h2 {
+                font-size: 1.3rem;
+            }
+        
+            .notification-card {
+                padding: 0.8rem;
+            }
+        
+            .notification-card p {
+                font-size: 0.9rem;
+            }
+        
+            .notification-card small {
+                font-size: 0.8rem;
+            }
+        
+            .no-notifications {
+                font-size: 1rem;
+                padding: 1.5rem;
+            }
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="header">
+        <img src="{% static 'media/mainlogo.jpg' %}" alt="SKILL Logo">
+    </div>
+    <div class="notifications-section">
+        <h2>Your Notifications</h2>
+        <div class="notifications-grid">
+            {% if notifications %}
+                <ul>
+                    {% for notification in notifications %}
+                        <div class="notification-card">
+                            <li>
+                                <p>{{ notification.notification }}</p>
+                                <small>{{ notification.timestamp|date:"M d, Y H:i" }}</small>
+                            </li>
+                        </div>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-notifications">No notifications yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {%endif%}
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #71b7e6, #9b59b6);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: auto;
+            position: relative;
+            padding: 20px;
+        }
+
+        .floating-object {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-object:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.6);
+            top: 15%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .floating-object:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.4);
+            top: 60%;
+            left: 75%;
+            animation-delay: 2s;
+        }
+
+        .floating-object:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.5);
+            top: 85%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(-15px);
+            }
+            50% {
+                transform: translateY(15px);
+            }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        h2 {
+            color: #3b278b;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #4749c5;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn {
+            background-color: #d9534f;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #c9302c;
+        }
+
+        .empty-message {
+            padding: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="floating-object"></div>
+    <div class="floating-object"></div>
+    <div class="floating-object"></div>
+
+    <div class="container">
+        <h2>Booking Details</h2>
+        <table class="booking-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Skill/Service</th>
+                    <th>Details</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            {% if booking.skill.price_type == 'hourly' %}
+                                <span class="badge hourly-badge">Hourly</span>
+                            {% else %}
+                                <span class="badge fixed-badge">Fixed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ booking.skill.name }}</td>
+                        <td>
+                            {% if booking.skill.price_type == 'hourly' %}
+                                {{ booking.hours }} hours / ৳{{ booking.skill.price }}/hr
+                            {% else %}
+                                One-time service
+                            {% endif %}
+                        </td>
+                        <td>৳{{ booking.total_amount }}</td>
+                        <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="status-{{ booking.booking_status|lower }}">
+                                {{ booking.booking_status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if booking.skill_user == request.user and booking.booking_status == 'Pending' %}
+                                <a href="{% url 'complete_booking' booking.id %}" class="btn complete-btn">✓Done</a>
+                                <a href="{% url 'cancel_booking' booking.id %}" class="btn cancel-btn">Cancel</a>
+                            {% elif booking.booked_by == request.user and booking.booking_status == 'Pending' %}
+                                <span class="waiting">Waiting confirmation</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-message">No bookings found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {%endif%}
+</body>
+</html>

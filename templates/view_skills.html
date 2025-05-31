@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Skills</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #eaf2f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #252a34;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h2::after {
+            content: "";
+            width: 80px;
+            height: 4px;
+            background-color: #252a34;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -10px;
+            border-radius: 2px;
+        }
+
+        .skills-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .skill-card {
+            background-color: #f9fafb;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #007bff;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .skill-card h3 {
+            font-size: 1.6rem;
+            color: #252a34;
+            margin-bottom: 10px;
+        }
+
+        .skill-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .no-skills {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .no-skills svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+            fill: #007bff;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        .add-skill-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-skill-btn:hover {
+            background-color: #0056b3;
+        }
+
+        
+        @media (min-width: 600px) {
+            .skills-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        
+        @media (min-width: 992px) {
+            .skills-list {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="container">
+        <h2>Your Skills</h2>
+        
+        {% if skills %}
+            <div class="skills-list">
+                {% for skill in skills %}
+                    <div class="skill-card">
+                        <h3>{{ skill.name }}</h3>
+                        <p><strong>Category:</strong> {{ skill.category }}</p>
+                        <p><strong>Description:</strong> {{ skill.description }}</p>
+                        <p><strong>Price:</strong> ৳{{ skill.price }}</p>
+                        <a href="{% url 'delete_skill' skill.id %}">Delete</a>
+                    </div>
+                    
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-skills">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg>
+                <p>You have not added any skills yet.</p>
+                <a href="/add-skill" class="add-skill-btn">Add Skill</a>
+            </div>
+        {% endif %}
+    </div>
+    {%endif%}
+</body>
+</html>

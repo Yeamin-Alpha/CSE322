@@ -1,0 +1,549 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Skill-Bridge | Home</title>
+
+    <style>
+        /* Make <html> and <body> span the full viewport height */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Turn body into a column-flex container */
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+
+        /* This wrapper will expand to push footer to the bottom */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        nav {
+            background-color: #000000;
+            padding: 15px 30px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            position: relative;
+            margin: 5px 0;
+        }
+
+        nav ul li:not(:last-child)>a {
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li:last-child {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav ul li:last-child a {
+            padding: 8px 15px;
+            font-size: 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            display: inline-block;
+            position: relative;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:not(.btn-login):not(.btn-logout)::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -5px;
+            width: 0;
+            height: 2px;
+            background-color: #f4a261;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            width: 80%;
+        }
+
+        nav ul li a:hover {
+            color: #f4a261;
+        }
+
+        .btn-login,
+        .btn-logout {
+            border: 2px solid #f4a261;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background-color: rgba(244, 162, 97, 0.1);
+        }
+
+        .btn-login:hover,
+        .btn-logout:hover {
+            background-color: #f4a261;
+            color: #000 !important;
+            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.3);
+        }
+
+        nav ul li a:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 15px;
+            }
+
+            nav ul li:last-child {
+                margin-left: 0;
+                gap: 10px;
+            }
+
+            nav ul li a {
+                padding: 8px 12px !important;
+                font-size: 14px !important;
+            }
+        }
+
+        /* HEADER LOGO */
+        .header {
+            background-color: #000000;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .header img {
+            width: 150px;
+        }
+
+        /* SEARCH BANNER */
+        .search-banner {
+            background-color: #000000;
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-banner h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .search-banner input {
+            width: 80%;
+            max-width: 500px;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: 1px solid #c72f29;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-banner input:focus {
+            border-color: #f4a261;
+            box-shadow: 0px 4px 8px rgba(255, 99, 71, 0.2);
+        }
+
+        .search-banner button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #cacaca31;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-banner button:hover {
+            background-color: #b3b0ae86;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-banner button:active {
+            transform: translateY(1px);
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* FLOATING SHAPES */
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.20);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .shape1 {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 10%;
+        }
+
+        .shape2 {
+            width: 100px;
+            height: 100px;
+            top: 30%;
+            right: 10%;
+        }
+
+        .shape3 {
+            width: 120px;
+            height: 120px;
+            bottom: 20%;
+            left: 25%;
+        }
+
+        .shape4 {
+            width: 120px;
+            height: 120px;
+            bottom: 15%;
+            left: 50%;
+        }
+
+        /* SERVICES MENU (CATEGORIES) */
+        .services-menu {
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .service-link {
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .service-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            color: #c72f29;
+        }
+
+        .service-link p {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .service-link i {
+            font-size: 36px;
+            color: #c72f29;
+            margin-bottom: 10px;
+        }
+
+        /* POPULAR SERVICES GRID */
+        .popular-services {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .popular-services h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .popular-services .service-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .service-grid div {
+            background-color: #e4e4e4;
+            width: 150px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .service-link img {
+            width: 80px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .service-grid div img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .service-grid div p {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* THE FOOTER */
+        footer {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            /* If you want a sticky footer that is always visible: */
+            /* position: fixed;
+               bottom: 0;
+               left: 0;
+               width: 100%; */
+            /* Otherwise, with flex layout, it will sit at bottom when content is short */
+        }
+
+        /* BAN POPUP STYLES */
+        .ban-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+        }
+
+        .ban-popup-content {
+            background-color: #333;
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .ban-popup-content h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .contact-info {
+            margin-top: 30px;
+            font-size: 1.2em;
+        }
+
+        .report-message {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .ban-logout {
+            background-color: #f4a261;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        .ban-logout:hover {
+            background-color: #e69152;
+        }
+    </style>
+</head>
+
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="content">
+        <!-- NAVBAR -->
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'services_page' %}">Services</a></li>
+                <li><a href="{% url 'filter_skills' %}">Filter</a></li>
+                <li><a href="{% url 'community' %}">Community</a></li>
+                <li>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">Account</a>
+                    <a href="{% url 'public_profile' username=user.username %}">Profile Card</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}">Log in | Sign up</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+
+        <!-- HEADER LOGO -->
+        <div class="header">
+            <img src="{% static 'media/mainlogo.jpg' %}" alt="SKILL Logo" />
+        </div>
+
+        <!-- SEARCH BANNER -->
+        <div class="search-banner">
+            <form action="/search/" method="get">
+                <input type="text" name="query" placeholder="Search for users or skills..." required /><br />
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="floating-shape shape1"></div>
+            <div class="floating-shape shape2"></div>
+            <div class="floating-shape shape3"></div>
+            <div class="floating-shape shape4"></div>
+        </div>
+
+        <!-- SERVICES MENU -->
+        <div class="services-menu">
+            <a href="{% url 'filter_skills' %}?category=Home%20%26%20Personal%20Service" class="service-link">
+                <i class="fas fa-home"></i>
+                <p>Home & Personal Service</p>
+            </a>
+            <a href="{% url 'filter_skills' %}?category=Repair%20%26%20Maintenance" class="service-link">
+                <i class="fas fa-tools"></i>
+                <p>Repair & Maintenance</p>
+            </a>
+            <a href="{% url 'filter_skills' %}?category=Arts%20%26%20Crafts" class="service-link">
+                <i class="fas fa-paint-brush"></i>
+                <p>Arts & Crafts</p>
+            </a>
+            <a href="{% url 'filter_skills' %}?category=Tutoring%20%26%20Mentorship" class="service-link">
+                <i class="fas fa-book"></i>
+                <p>Educational</p>
+            </a>
+            <a href="{% url 'filter_skills' %}?category=Digital%20%26%20Tech%20Skills" class="service-link">
+                <i class="fas fa-laptop-code"></i>
+                <p>Digital & Technical</p>
+            </a>
+            <a href="{% url 'services_page' %}" class="service-link">
+                <i class="fas fa-ellipsis-h"></i>
+                <p>More</p>
+            </a>
+        </div>
+
+        <!-- POPULAR SERVICES GRID -->
+        <div class="popular-services">
+            <h2>Popular Services</h2>
+            <div class="service-grid">
+                <a href="{% url 'filter_skills' %}?skill_name=House Cleaning" class="service-link">
+                    <img src="{% static 'media/tutor.jpg' %}" alt="Service Image" />
+                    <p>House Cleaning</p>
+                </a>
+
+                <a href="{% url 'filter_skills' %}?skill_name=Gardening and Lawn Care" class="service-link">
+                    <img src="{% static 'media/garden.jpg' %}" alt="Service Image" />
+                    <p>Gardening and Lawn Care</p>
+                </a>
+                <a href="{% url 'filter_skills' %}?skill_name=Graphic Design" class="service-link">
+                    <img src="{% static 'media/graphics.jpg' %}" alt="Service Image" />
+                    <p>Graphic Design</p>
+                </a>
+                <a href="{% url 'filter_skills' %}?skill_name=Errand Running" class="service-link">
+                    <img src="{% static 'media/erand.jpg' %}" alt="Service Image" />
+                    <p>Errand Running</p>
+                </a>
+                <a href="{% url 'filter_skills' %}?skill_name=Car Detailing and Maintenance" class="service-link">
+                    <img src="{% static 'media/cars.jpg' %}" alt="Service Image" />
+                    <p>Car Detailing</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER (now pushed to bottom by the flex layout) -->
+    <footer>
+        <p>Share Your Skill</p>
+    </footer>
+
+    <!-- FLOATING SHAPES ANIMATION SCRIPT -->
+    <script>
+        const shapes = document.querySelectorAll('.floating-shape');
+        shapes.forEach(shape => {
+            animateShape(shape);
+        });
+
+        function animateShape(shape) {
+            const randomDuration = Math.random() * (10000 - 5000) + 5000;
+            const randomX = Math.random() * 100 - 50;
+            const randomY = Math.random() * 100 - 50;
+            shape.animate([
+                { transform: `translate(0, 0)` },
+                { transform: `translate(${randomX}px, ${randomY}px)` },
+                { transform: `translate(0, 0)` }
+            ], {
+                duration: randomDuration,
+                iterations: Infinity,
+                easing: 'ease-in-out'
+            });
+        }
+    </script>
+    {% endif %}
+</body>
+
+</html>

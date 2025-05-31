@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messenger</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient background */
+            color: #333;
+        }
+
+        .messenger {
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* Prevent scroll on main container */
+        }
+
+        .contacts {
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .contacts h3 {
+            margin: 0 0 25px;
+            color: #4a148c; /* Purple accent */
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .contacts ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .contacts li {
+            margin-bottom: 12px;
+        }
+
+        .contacts a {
+            display: block;
+            padding: 12px 15px;
+            background-color: #f0f4f8;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .contacts a:hover, .contacts a.active {
+            background-color: #e1bee7; /* Light purple on hover/active */
+            color: #4a148c;
+        }
+
+        .contacts form {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .contacts input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+        }
+
+        .contacts button {
+            padding: 12px 20px;
+            background-color: #4a148c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .contacts button:hover {
+            background-color: #6a1b9a;
+        }
+
+        .chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            overflow-y: auto; /* Allow chat to scroll */
+        }
+
+        .chat h3 {
+            margin-bottom: 20px;
+            color: #4a148c;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .messages .sent, .messages .received {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages .sent {
+            align-items: flex-end;
+        }
+
+        .messages .sent p, .messages .received p {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 25px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .messages .sent p {
+            background-color: #4a148c;
+            color: white;
+        }
+
+        .messages .received p {
+            background-color: #f0f4f8;
+            color: #333;
+        }
+
+        .messages small {
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .chat form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat textarea {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            resize: none;
+        }
+
+        .chat button {
+            padding: 12px 20px;
+            background-color: #4a148c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat button:hover {
+            background-color: #6a1b9a;
+        }
+
+        nav {
+            background-color: #000000;
+            padding: 15px 30px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            width: 100%;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: #f4a261;
+            transition: width 0.3s;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        nav ul li a:hover {
+            color: #f4a261;
+        }
+
+        @media (max-width: 768px) {
+            .messenger {
+                flex-direction: column;
+            }
+
+            .contacts {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <nav>
+        <ul>
+            <li><a href="{% url 'index' %}">Home</a></li>
+            <li><a href="{% url 'services_page' %}">Services</a></li>
+            <li><a href="{% url 'filter_skills' %}">Filter</a></li>
+            <li><a href="{% url 'community' %}">Community</a></li>
+            <li>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">Account</a>
+                    <a href="{% url 'public_profile' username=user.username %}">Profile Card</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Log in | Sign up</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+    <div class="messenger">
+        <div class="contacts">
+            <h3>Chat Users</h3>
+            <ul>
+                {% for user in chat_users %}
+                    <li>
+                        <a href="{% url 'chat_interface' user.username %}" {% if selected_user and selected_user.username == user.username %}class="active"{% endif %}>
+                            {{ user.username }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <form method="GET" action="{% url 'search_users' %}">
+                <input type="text" name="query" placeholder="Search users..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="chat">
+            {% if selected_user %}
+                <h3>Chat with {{ selected_user.username }}</h3>
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="{% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                            <p>{{ message.message }}</p>
+                            <small>{{ message.sent_time }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <textarea name="message" rows="3" placeholder="Type your message here"></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            {% else %}
+                <p>Select a user to chat with.</p>
+            {% endif %}
+        </div>
+    </div>
+    {%endif%}
+</body>
+</html>

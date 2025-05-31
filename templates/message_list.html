@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li strong {
+            color: red; /* Highlight unread messages */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            li span {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <h2>Received Messages</h2>
+    <ul>
+        {% for message in received_messages %}
+            <li>
+                <span>
+                    From: {{ message.sender.username }} - {{ message.message }} ({{ message.sent_time }})
+                    {% if not message.is_read %}<strong>(Unread)</strong>{% endif %}
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Sent Messages</h2>
+    <ul>
+        {% for message in sent_messages %}
+            <li>
+                <span>
+                    To: {{ message.receiver.username }} - {{ message.message }} ({{ message.sent_time }})
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+    {%endif%}
+</body>
+</html>

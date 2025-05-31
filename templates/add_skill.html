@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Skill-Bridge | Add Skill</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #e4d79c 0%, #eca2a2 100%);
+            color: #333;
+            padding: 20px;
+            overflow: auto; /* Changed to auto for scrollability */
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .floating-shape {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .shape1 {
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            top: 20%;
+            left: 85%;
+            animation-delay: 2s;
+        }
+
+        .shape3 {
+            top: 75%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .container_skill {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            z-index: 1;
+        }
+
+        .profile-card_skill {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+            border: 2px solid #f4f4f4;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .profile-info_skill label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-info_skill select,
+        .profile-info_skill input,
+        .profile-info_skill textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .profile-info_skill select:focus,
+        .profile-info_skill input:focus,
+        .profile-info_skill textarea:focus {
+            border-color: #7b2cbf;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(123, 44, 191, 0.3);
+        }
+
+        .profile-info_skill select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='gray'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7b2cbf, #9d4edd);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(123, 44, 191, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(123, 44, 191, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .profile-card_skill {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="floating-shape shape1"></div>
+    <div class="floating-shape shape2"></div>
+    <div class="floating-shape shape3"></div>
+
+    <div class="container_skill">
+        <div class="profile-card_skill">
+            <div class="profile-info_skill">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    {% for error in errors.values %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+    
+                <form method="post" action="{% url 'add_skill' %}">
+                    {% csrf_token %}
+    
+                    <label for="skill_name">Skill Name</label>
+                    <select id="skill_name" name="skill_name" onchange="updateCategory()" required>
+                        <option value="">Select a skill</option>
+                        {% for option in skill_options %}
+                        <option value="{{ option.name }}" 
+                            data-category="{{ option.category }}"
+                            {% if form_data.skill_name == option.name %}selected{% endif %}>
+                            {{ option.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+    
+                    <label for="skill_category">Category</label>
+                    <input type="text" id="skill_category" name="skill_category" 
+                        value="{{ form_data.skill_category|default:'' }}" readonly>
+    
+                    <label for="skill_description">Description</label>
+                    <textarea id="skill_description" name="skill_description" rows="3" 
+                        placeholder="Describe your skill...">{{ form_data.skill_description|default:'' }}</textarea>
+    
+                    <div class="form-group">
+                        <label>Pricing Type</label>
+                        <select name="price_type" class="form-control" required>
+                            <option value="fixed" {% if form_data.price_type == 'fixed' %}selected{% endif %}>Fixed Price</option>
+                            <option value="hourly" {% if form_data.price_type == 'hourly' %}selected{% endif %}>Hourly Rate</option>
+                        </select>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="skill_price">Price (BDT)</label>
+                        <input type="number" step="0.01" id="skill_price" name="skill_price" 
+                            value="{{ form_data.skill_price|default:'' }}" required>
+                    </div>
+    
+                    <div class="btn-group">
+                        <button type="submit" class="btn">Add Skill</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function updateCategory() {
+            var skillSelect = document.getElementById("skill_name");
+            var selectedOption = skillSelect.options[skillSelect.selectedIndex];
+            document.getElementById("skill_category").value = selectedOption.getAttribute("data-category");
+        }
+
+        function toggleHoursField(select) {
+            const hoursField = document.getElementById('hours-field');
+            if (select.value === 'hourly') {
+                hoursField.style.display = 'block';
+                hoursField.querySelector('input').required = true;
+            } else {
+                hoursField.style.display = 'none';
+                hoursField.querySelector('input').required = false;
+            }
+        }
+    </script>
+    {%endif%}
+</body>
+
+</html>

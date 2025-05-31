@@ -1,0 +1,7 @@
+#ban_user.html
+<form method="POST">
+    {% csrf_token %}
+    <label for="duration">Ban Duration (days):</label>
+    <input type="number" name="duration" required>
+    <button type="submit">Ban User</button>
+</form>

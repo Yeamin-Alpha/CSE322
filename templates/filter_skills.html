@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Skill Users</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+        
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.20);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .shape1 { width: 150px; height: 150px; top: 10%; left: 10%; }
+        .shape2 { width: 100px; height: 100px; top: 30%; right: 10%; animation-delay: 2s; }
+        .shape3 { width: 120px; height: 120px; bottom: 20%; left: 25%; animation-delay: 4s; }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+        
+        nav {
+            background-color: #000000;
+            padding: 15px 30px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        nav ul li {
+            position: relative;
+            margin: 5px 0;
+        }
+        
+        nav ul li:not(:last-child) > a {
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li:last-child {
+            display: flex;
+            gap: 15px;
+        }
+        
+        nav ul li:last-child a {
+            padding: 8px 15px;
+            font-size: 15px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            display: inline-block;
+            position: relative;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:not(.btn-login):not(.btn-logout)::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -5px;
+            width: 0;
+            height: 2px;
+            background-color: #f4a261;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover::after {
+            width: 80%;
+        }
+        
+        nav ul li a:hover {
+            color: #f4a261;
+        }
+        
+        .btn-login, .btn-logout {
+            border: 2px solid #f4a261;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background-color: rgba(244, 162, 97, 0.1);
+        }
+        
+        .btn-login:hover, .btn-logout:hover {
+            background-color: #f4a261;
+            color: #000 !important;
+            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.3);
+        }
+        
+        nav ul li a:active {
+            transform: scale(0.96);
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 15px;
+            }
+            
+            nav ul li:last-child {
+                margin-left: 0;
+                gap: 10px;
+            }
+            
+            nav ul li a {
+                padding: 8px 12px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        .filter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .filter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .filter-card h2, .filter-card h3 {
+            color: #c72f29;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .filter-card form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .filter-card label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .filter-card select, .filter-card button {
+            padding: 0.8rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #c72f29;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-card select:focus {
+            border-color: #f4a261;
+            box-shadow: 0 0 10px rgba(244, 162, 97, 0.3);
+        }
+        
+        .filter-card button {
+            background-color: #c72f29;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .filter-card button:hover {
+            background-color: #b32722;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(199, 47, 41, 0.3);
+        }
+        
+        .results-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .results-list li {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .results-list li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-list li a {
+            text-decoration: none;
+            color: #c72f29;
+            font-weight: 600;
+        }
+        
+        .results-list li a:hover {
+            color: #f4a261;
+        }
+        
+        .results-list li ul {
+            list-style: none;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .results-list li ul li {
+            background: none;
+            padding: 0;
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-card {
+                padding: 1.5rem;
+                margin: 1.5rem;
+            }
+        
+            .filter-card h2, .filter-card h3 {
+                font-size: 1.5rem;
+            }
+        
+            .filter-card form {
+                gap: 0.8rem;
+            }
+        
+            .filter-card select, .filter-card button {
+                padding: 0.7rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="floating-shape shape1"></div>
+    <div class="floating-shape shape2"></div>
+    <div class="floating-shape shape3"></div>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'index' %}">Home</a></li>
+            <li><a href="{% url 'services_page' %}">Services</a></li>
+            <li><a href="{% url 'filter_skills' %}">Filter</a></li>
+            <li><a href="{% url 'community' %}">Community</a></li>
+            <li>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">Account</a>
+                    <a href="{% url 'public_profile' username=user.username %}">Profile Card</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Log in | Sign up</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+
+    <div class="filter-card">
+        <h2>Filter Skill Users</h2>
+        <form method="GET" action="{% url 'filter_skills' %}">
+            <label for="category">Category:</label>
+            <select name="category" id="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="skill_name">Skill Name:</label>
+            <select name="skill_name" id="skill_name">
+                <option value="">All Skills</option>
+                {% for skill_name in skill_names %}
+                    <option value="{{ skill_name }}" {% if selected_skill_name == skill_name %}selected{% endif %}>{{ skill_name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="location">Location:</label>
+            <select name="location" id="location">
+                <option value="">All Divisions</option>
+                {% for division in divisions %}
+                    <option value="{{ division }}" {% if selected_location == division %}selected{% endif %}>{{ division }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="rating">Minimum Rating:</label>
+            <select name="rating" id="rating">
+                <option value="">Any Rating</option>
+                {% for i in "543210" %}
+                    <option value="{{ i }}" {% if selected_rating == i|stringformat:"d" %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Apply Filters</button>
+        </form>
+    </div>
+
+    <div class="filter-card">
+        <h3>Results:</h3>
+        <ul class="results-list">
+            {% for user_profile in skill_users %}
+                <li>
+                    <a href="{% url 'public_profile' username=user_profile.user.username %}">
+                        <strong>{{ user_profile.user.username }}</strong>
+                    </a><br>
+                    Location: {{ user_profile.location }}<br>
+                    Rating: {{ user_profile.user.public_profile.rating|default:"Not rated" }}<br>
+                    
+                    <ul>
+                        {% for skill in user_profile.skills.all %}
+                            <li>{{ skill.name }} - Category: {{ skill.category }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% empty %}
+                <li>No skill users found with the selected criteria.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {%endif%}
+</body>
+</html>

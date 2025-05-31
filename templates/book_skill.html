@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Skill</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Changed height to min-height for responsiveness */
+            background: linear-gradient(135deg, #71b7e6, #9b59b6);
+            overflow: auto; /* Changed overflow to auto for scrollability */
+            position: relative;
+            color: #333;
+            padding: 20px; /* Added padding for smaller screens */
+        }
+
+        .floating-object {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-object:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.6);
+            top: 10%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-object:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.4);
+            top: 50%;
+            left: 70%;
+            animation-delay: 2s;
+        }
+
+        .floating-object:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.5);
+            top: 75%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(-20px);
+            }
+            50% {
+                transform: translateY(20px);
+            }
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%; /* Added width 100% for responsiveness */
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: #3b278b;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #4749c5, #4749c5);
+            color: #fff;
+            transition: background 0.4s ease-in-out;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #6565d1, #6565d1);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.user.profile.is_banned_now and not request.user.is_staff %}
+    <div class="ban-popup">
+        <div class="ban-popup-content">
+            <h2>You Have Been Banned</h2>
+            {% if request.user.profile.banned_until %}
+                <p>Your account has been temporarily suspended until {{ request.user.profile.banned_until|date:"F d, Y H:i" }}.</p>
+            {% else %}
+                <p>Your account has been temporarily suspended.</p>
+            {% endif %}
+            <p>Please contact us for more information.</p>
+            <div class="contact-info">
+                <p>Email: contact@example.com</p>
+                <p>Phone: +1 123-456-7890</p>
+            </div>
+            <p class="report-message">To report an unfair ban, please contact us with details.</p>
+            <a href="{% url 'logout' %}" class="ban-logout">Logout</a>
+        </div>
+    </div>
+
+    {%else%}
+    <div class="floating-object"></div>
+    <div class="floating-object"></div>
+    <div class="floating-object"></div>
+
+    <div class="container">
+        <h2>Book a Skill from {{ skill_user.username }}</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="skill">Select Skill:</label>
+                <select name="skill_id" id="skill" onchange="updateBookingFields(this)" required>
+                    <option value="" disabled selected>Select a skill</option>
+                    {% for skill in skills %}
+                        <option value="{{ skill.id }}" 
+                            data-price-type="{{ skill.price_type }}"
+                            data-price="{{ skill.price }}">
+                            {{ skill.name }} ({% if skill.price_type == 'hourly' %}৳{{ skill.price }}/hr{% else %}Fixed ৳{{ skill.price }}{% endif %})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div id="hourly-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="hours">Number of Hours:</label>
+                    <input type="number" id="hours" name="hours" min="1" required>
+                </div>
+            </div>
+            <div id="total-price" style="margin-top: 10px; font-weight: bold;"></div>
+
+            <button type="submit" class="btn">Confirm Booking</button>
+        </form>
+    </div>
+    <script>
+        
+        function updateBookingFields(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const priceType = selectedOption.getAttribute('data-price-type');
+            const price = parseFloat(selectedOption.getAttribute('data-price'));
+        
+            const hourlyFields = document.getElementById('hourly-fields');
+            const totalPriceDiv = document.getElementById('total-price');
+            const hoursInput = document.getElementById('hours');
+        
+            totalPriceDiv.textContent = ''; // Clear total
+            hoursInput.value = ''; // Reset hours on skill change
+        
+            if (priceType === 'hourly') {
+                hourlyFields.style.display = 'block';
+                hoursInput.required = true;
+        
+                hoursInput.oninput = function () {
+                    const hours = parseInt(this.value);
+                    if (!isNaN(hours) && hours > 0) {
+                        const total = (price * hours).toFixed(2);
+                        totalPriceDiv.textContent = `Total: ৳${total}`;
+                    } else {
+                        totalPriceDiv.textContent = '';
+                    }
+                };
+        
+            } else {
+                hourlyFields.style.display = 'none';
+                hoursInput.required = false;
+                totalPriceDiv.textContent = `Total: ৳${price.toFixed(2)}`;
+            }
+        }
+        
+    
+        function updatePrice(select) {
+            const price = select.options[select.selectedIndex].getAttribute('data-price');
+            document.getElementById('price').value = price ? `৳${price}` : '';
+        }
+    </script>
+    {%endif%}
+</body>
+</html>
